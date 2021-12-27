@@ -27,19 +27,19 @@ Used datasets:
 ## Results
 1) ruRoberta-large fine-tuned on TERRa dataset  
 * lr schedule
-![img/ruroberta_terra_2021-12-24_19-42-55_lr.png]()  
+![](img/ruroberta_terra_2021-12-24_19-42-55_lr.png)  
 * train/val accuracy
-![img/ruroberta_terra_2021-12-24_19-42-55_acc.png]()  
+![](img/ruroberta_terra_2021-12-24_19-42-55_acc.png)  
 * Submission  
-![img/ruroberrta_terra_submit.png]()  
+![](img/ruroberrta_terra_submit.png)  
 
 1) ruRoberta-large fine-tuned on RUSSE dataset  
 * lr schedule
-![img/ruroberta_russe_2021-12-26_18-35-35_lr.png]()  
+![](img/ruroberta_russe_2021-12-26_18-35-35_lr.png)  
 * train/val accuracy
-![img/ruroberta_russe_2021-12-26_18-35-35_acc.png]()  
+![](img/ruroberta_russe_2021-12-26_18-35-35_acc.png)  
 * Submission  
-![img/ruroberrta_russe_submit.png]()  
+![](img/ruroberrta_russe_submit.png)  
 
 ## Further
 * make multi-task learning
