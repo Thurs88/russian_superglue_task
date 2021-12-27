@@ -81,8 +81,8 @@ def make_prediction(cfg: DictConfig, sentence1: str, sentence2: str) -> None:
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Inference in RussianSUPERGLUE competition')
-    parser.add_argument('--task_name', help='task name', type=str, default='russe')
+    parser = argparse.ArgumentParser(description='Make model inference')
+    parser.add_argument('--task_name', help='task name', type=str, default='terra')
     parser.add_argument('--device', help='inference device', type=str, default='cuda')
     args = parser.parse_args()
 

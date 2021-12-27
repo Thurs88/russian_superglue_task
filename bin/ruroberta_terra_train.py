@@ -86,7 +86,6 @@ def run(cfg: DictConfig) -> None:
 
 
 @hydra.main(config_path='../cfg', config_name='ruroberta_terra_config')
-# @hydra.main(config_path='../cfg', config_name='ruroberta_russe_config')
 def run_model(cfg: DictConfig) -> None:
     os.makedirs('../logs', exist_ok=True)
     print(OmegaConf.to_yaml(cfg))
