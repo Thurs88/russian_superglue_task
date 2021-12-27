@@ -1,0 +1,4 @@
+class_name: torch.nn.BCEWithLogitsLoss
+params:
+  reduce: None
+#  reduction: sum

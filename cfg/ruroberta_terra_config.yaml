@@ -1,0 +1,35 @@
+defaults:
+  - _self_
+  - datamodule: terra_dataset
+  - trainer: ruroberta_trainer
+  - training: ruroberta_training
+  - logging: comet_ml
+  - optimizer: adamw
+  - scheduler: linear_schedule_with_warmup
+  - model: ruroberta
+  - callbacks: ruroberta_callbacks
+  - private: comet_api
+#  - augmentation: basic_augs
+  - loss: bce_logits
+  - metric: accuracy  # metric_manager
+  - test: ruroberta_test
+  - inference: ruroberta_inference
+  - override hydra/hydra_logging: colorlog
+  - override hydra/job_logging: colorlog
+
+general:
+  logs_folder_name: logs
+  workspace: thurs88
+  project_name: sberdev-test
+  device: cuda
+  log_code: False
+  save_pytorch_model: True
+  save_best: True
+  convert_to_jit: False
+
+hydra:
+  run:
+    dir: ../outputs/${now:%Y-%m-%d_%H-%M-%S} #_${hydra.job.override_dirname}
+  sweep:
+    dir: ../outputs/${now:%Y-%m-%d_%H-%M-%S}
+    subdir: ${hydra.job.override_dirname}

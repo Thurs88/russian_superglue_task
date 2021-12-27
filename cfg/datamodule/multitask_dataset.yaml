@@ -1,0 +1,15 @@
+terra:
+  class_name: pipeline.datasets.terra_dataset.TERRaDataset
+  data_path: /home/nbaranov/projects/personal/sberdev_test/data/TERRa/
+
+russe:
+  class_name: pipeline.datasets.russe_dataset.RUSSEDataset
+  data_path: /home/nbaranov/projects/personal/sberdev_test/data/RUSSE/
+
+tokenizer: transformers.RobertaTokenizer
+pretrained_tokenizer: sberbank-ai/ruRoberta-large
+
+data_module_name: pipeline.datamodules.multitask_datamodule.MultiTaskDataModule
+batch_size: 8
+pin_memory: Ture
+num_workers: 4
