@@ -25,12 +25,12 @@ Used datasets:
 
 ## Description
 
-* bin/ - executable files
+* [bin/](bin) - executable files
     * ruroberta_train.py - main train loop
     * ruroberta_validation.py - model estimation on the val dataset
     * ruroberta_test.py - model inference on the test dataset
     * ruroberta_inference.py - model inference on individual examples
-* cfg - configs with experiment settings
+* [cfg/](cfg) - configs with experiment settings
     * augmentation
     * callbacks
     * datamodule
@@ -44,10 +44,10 @@ Used datasets:
     * scheduler
     * trainer
     * training
-* data - datasets
-* notebooks - jupyter-notebooks
-* outputs - results of experiments
-* pipeline - main pipeline code
+* [data/](data) - datasets
+* [notebooks/](notebooks) - jupyter-notebooks
+* [outputs/](outputs) - results of experiments
+* [pipeline/](pipeline) - main pipeline code
     * callbacks - various callbacks
     * datamodules - LightningDataModule classes
     * datasets - PyTorch dataset classes
@@ -56,7 +56,7 @@ Used datasets:
     * models - PyTorch model classes
     * schedulers - lr schedulers
     * wrappers - pytorch-lightning model wrappers
-* src - various utilities and support functions
+* [src/](src) - various utilities and support functions
 * requirements.txt
 
 
