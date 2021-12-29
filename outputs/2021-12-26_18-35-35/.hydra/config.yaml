@@ -1,0 +1,106 @@
+general:
+  logs_folder_name: logs
+  workspace: thurs88
+  project_name: sberdev-test
+  device: cuda
+  log_code: false
+  save_pytorch_model: true
+  save_best: true
+  convert_to_jit: false
+datamodule:
+  class_name: pipeline.datasets.russe_dataset.RUSSEDataset
+  tokenizer: transformers.RobertaTokenizer
+  pretrained_tokenizer: sberbank-ai/ruRoberta-large
+  data_path: /home/nbaranov/projects/personal/sberdev_test/data/RUSSE/
+  data_module_name: pipeline.datamodules.russeperglue_datamodule.RusSuperGLUEDataModule
+  batch_size: 8
+  pin_memory: Ture
+  num_workers: 4
+trainer:
+  gpus: 1
+  num_nodes: 1
+  accumulate_grad_batches: 4
+  profiler: false
+  max_epochs: 20
+  log_every_n_steps: 20
+  num_sanity_val_steps: 0
+  gradient_clip_val: 0.5
+  gradient_clip_algorithm: value
+  weights_summary: top
+  auto_scale_batch_size: false
+  precision: 16
+training:
+  lr: 8.0e-06
+  head_lr: 5.0e-05
+  metric: ${metric.metric.metric_name}
+  mode: max
+  seed: 666
+  n_classes: 2
+  wrapper_name: pipeline.wrappers.ruroberta_wrapper.ruRoBERTaFineTuner
+logging:
+  log: true
+  loggers:
+  - class_name: pytorch_lightning.loggers.CometLogger
+    params:
+      save_dir: ${general.logs_folder_name}
+      workspace: ${general.workspace}
+      project_name: ${general.project_name}
+      api_key: ${private.comet_api}
+      experiment_name: ${general.run_name}
+optimizer:
+  class_name: torch.optim.AdamW
+  params:
+    lr: ${training.lr}
+    weight_decay: 0.01
+scheduler:
+  class_name: transformers.get_linear_schedule_with_warmup
+  step: step
+  monitor: ${training.metric}
+  params:
+    num_warmup_steps: 100
+    num_training_steps: 1635
+model:
+  class_name: pipeline.models.ruroberta.ruRoBERTa
+  pretrained_model: sberbank-ai/ruRoberta-large
+  checkpoint: /home/nbaranov/projects/personal/sberdev_test/outputs/2021-12-24_19-42-55/saved_models/best_epoch=6-valid_accuracy=0.0000.pth
+  freeze_params: false
+  params:
+    hidden_state: 1024
+    dropout: 0.1
+callbacks:
+  early_stopping:
+    class_name: pytorch_lightning.callbacks.EarlyStopping
+    params:
+      monitor: valid_loss
+      patience: 5
+      min_delta: 0.001
+      verbose: true
+      mode: min
+  model_checkpoint:
+    class_name: pytorch_lightning.callbacks.ModelCheckpoint
+    params:
+      monitor: val_${training.metric}
+      save_top_k: 3
+      dirpath: saved_models
+      filename: '{epoch}-{valid_${training.metric}:.4f}'
+      mode: max
+  other_callbacks:
+  - class_name: pytorch_lightning.callbacks.LearningRateMonitor
+    params: null
+private:
+  comet_api: pEbc0SU2uJ9I4iPfqOFkM8iGx
+loss:
+  class_name: torch.nn.BCEWithLogitsLoss
+  params:
+    reduce: None
+metric:
+  metric:
+    class_name: torchmetrics.Accuracy
+    metric_name: accuracy
+    params:
+      threshold: 0.5
+inference:
+  run_name: 2021-12-24_19-42-55
+  dataset_class: pipeline.datasets.terra_dataset.TERRaTestDataset
+  mode: test
+  device: cuda

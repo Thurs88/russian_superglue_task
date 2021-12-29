@@ -1,4 +1,5 @@
 import json
+import os
 import warnings
 
 warnings.filterwarnings('ignore')
@@ -10,15 +11,12 @@ import pandas as pd
 import yaml
 from hydra import compose, initialize
 from omegaconf import DictConfig, OmegaConf
-from transformers import DataCollatorWithPadding
 
 from src.technical_utils import load_obj
 from src.utils import set_seed
 
 warnings.filterwarnings('ignore')
 import torch
-
-# from src.get_dataset import get_test_dataset
 
 
 def make_prediction(cfg: DictConfig) -> pd.DataFrame:
@@ -73,6 +71,7 @@ def make_prediction(cfg: DictConfig) -> pd.DataFrame:
 
 def make_submit(df, path_to_save: str):
     """
+    File example:
     {"idx": 2, "label": "false"}
     {"idx": 3, "label": "true"}
     """
@@ -89,13 +88,25 @@ def make_submit(df, path_to_save: str):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Make RUSSE submission')
-    parser.add_argument('--device', help='inference device', type=str, default='cuda')
+    parser = argparse.ArgumentParser(description='Make submission')
+    parser.add_argument(
+        '--task_name',
+        help='name of task and dataset',
+        type=str,
+        choices=['terra', 'russe'],
+        default='terra'
+    )
+    parser.add_argument(
+        '--device',
+        help='inference device',
+        type=str,
+        default='cuda'
+    )
     args = parser.parse_args()
 
-    initialize(config_path="../cfg/test/")
+    initialize(config_path="../cfg/inference/")
     test_cfg = compose(config_name="ruroberta_test")
-    test_cfg = test_cfg['russe']
+    test_cfg = test_cfg[args.task_name]
     test_cfg['device'] = args.device
 
     path = f'../outputs/{test_cfg.run_name}/.hydra/config.yaml'
@@ -107,6 +118,15 @@ if __name__ == '__main__':
     # predict labels
     test_df_with_labels = make_prediction(cfg)
 
-    test_df_with_labels.to_csv(f'../outputs/RUSSe_predicts/{cfg.test.run_name}_test_preds.csv', sep='\t', index=False)
+    # save results
+    save_dir = f'../outputs/{args.task_name}_predicts/'
+    if not os.path.exists(save_dir):  # type: ignore
+        os.makedirs(save_dir, exist_ok=True)
+
+    test_df_with_labels.to_csv(
+        os.path.join(save_dir, f'{cfg.test.run_name}_test_preds.csv'),
+        sep='\t',
+        index=False
+    )
     # save submission file
-    make_submit(test_df_with_labels, path_to_save='../outputs/RUSSe_predicts/RUSSE.jsonl')
+    make_submit(test_df_with_labels, path_to_save='../outputs/TERRa_predicts/TERRa.jsonl')

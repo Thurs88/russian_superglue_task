@@ -26,14 +26,17 @@ class RusSuperGLUEDataModule(pl.LightningDataModule):
     def prepare_data(self):
         # load datasets
         self.train_data = pd.read_json(
-            path_or_buf=self.cfg.datamodule.data_path + 'train.jsonl', lines=True
+            path_or_buf=self.cfg.datamodule.data_path + 'train.jsonl',
+            lines=True
         ).set_index('idx')
-        self.val_data = pd.read_json(path_or_buf=self.cfg.datamodule.data_path + 'val.jsonl', lines=True).set_index(
-            'idx'
-        )
+        self.val_data = pd.read_json(
+            path_or_buf=self.cfg.datamodule.data_path + 'val.jsonl',
+            lines=True
+        ).set_index('idx')
         self.test_data = pd.read_json(
-            path_or_buf=self.cfg.datamodule.data_path + 'test.jsonl', lines=True
-        )  # .set_index('idx')
+            path_or_buf=self.cfg.datamodule.data_path + 'test.jsonl',
+            lines=True
+        )
 
     def setup(self, stage=None):
         # Assign train/val datasets for use in dataloaders

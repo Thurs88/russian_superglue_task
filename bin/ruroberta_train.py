@@ -1,4 +1,7 @@
 import os
+import sys
+path = os.path.join(os.path.dirname(__file__), os.pardir)
+sys.path.append(path)
 import warnings
 from pathlib import Path
 
@@ -95,4 +98,8 @@ def run_model(cfg: DictConfig) -> None:
 
 
 if __name__ == '__main__':
+    """
+    Example:
+    python bin/ruroberta_train.py --config-name='ruroberta_terra_config'
+    """
     run_model()

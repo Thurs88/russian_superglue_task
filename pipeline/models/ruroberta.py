@@ -14,14 +14,6 @@ class ruRoBERTa(nn.Module):
         self.classifier = nn.Sequential(
             nn.BatchNorm1d(self.model.config.hidden_size),
             nn.Dropout(p=self.cfg.model.params.dropout),
-            # nn.Linear(self.model.config.hidden_size, self.model.config.hidden_size),
-            # nn.ReLU(),
-            # nn.BatchNorm1d(self.model.config.hidden_size),
-            # nn.Dropout(p=self.cfg.model.params.dropout),
-            # nn.Linear(self.model.config.hidden_size, self.model.config.hidden_size),
-            # nn.ReLU(),
-            # nn.BatchNorm1d(self.model.config.hidden_size),
-            # nn.Dropout(p=self.cfg.model.params.dropout),
             nn.Linear(self.model.config.hidden_size, 1),
         )
 

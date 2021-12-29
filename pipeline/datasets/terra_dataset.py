@@ -1,6 +1,7 @@
 from typing import Dict, List
 
 import torch
+from torch import Tensor
 from torch.utils.data import Dataset
 
 
@@ -20,7 +21,7 @@ class TERRaDataset(Dataset):
     def __len__(self) -> int:
         return len(self.data)
 
-    def __getitem__(self, idx: int) -> Dict:
+    def __getitem__(self, idx: int) -> Dict[str, Tensor]:
         premise = self.data[idx][0]
         hypothesis = self.data[idx][1]
         label = self.labels_map[self.data[idx][-1]]
@@ -48,21 +49,10 @@ class TERRaDataset(Dataset):
         }
 
 
-class TERRaTestDataset(Dataset):
+class TERRaTestDataset(TERRaDataset):
     """
     Custom PyTorch dataset class
     """
-
-    def __init__(self, data: List, tokenizer, **kwarg: Dict):
-        self.data = data
-        self.tokenizer = tokenizer
-        self.labels_map = {
-            "not_entailment": 0,
-            "entailment": 1,
-        }
-
-    def __len__(self) -> int:
-        return len(self.data)
 
     def __getitem__(self, idx: int) -> Dict:
         premise = self.data[idx][0]

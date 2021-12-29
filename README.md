@@ -9,7 +9,6 @@
 
 </div>
 
-## Description
 PyTorch Lightning pipeline for test task based on [RussianSuperGLUE benchmark](https://russiansuperglue.com).  
 
 Main frameworks used: 
@@ -22,6 +21,44 @@ Used models:
 Used datasets:  
 * [TERRa](https://russiansuperglue.com/tasks/task_info/TERRa)
 * [RUSSE](https://russiansuperglue.com/tasks/task_info/RUSSE)
+
+
+## Description
+
+* bin/ - executable files
+    * ruroberta_train.py - main train loop
+    * ruroberta_validation.py - model estimation on the val dataset
+    * ruroberta_test.py - model inference on the test dataset
+    * ruroberta_inference.py - model inference on individual examples
+* cfg - configs with experiment settings
+    * augmentation
+    * callbacks
+    * datamodule
+    * inference
+    * logging
+    * loss
+    * metric
+    * model
+    * optimizer
+    * private
+    * scheduler
+    * trainer
+    * training
+* data - datasets
+* notebooks - jupyter-notebooks
+* outputs - results of experiments
+* pipeline - main pipeline code
+    * callbacks - various callbacks
+    * datamodules - LightningDataModule classes
+    * datasets - PyTorch dataset classes
+    * losses - custom losses
+    * metrics - custom metrics
+    * models - PyTorch model classes
+    * schedulers - lr schedulers
+    * wrappers - pytorch-lightning model wrappers
+* src - various utilities and support functions
+* requirements.txt
+
 
 
 ## Results
@@ -65,7 +102,7 @@ Next, navigate to any file and run it.
 * train models  
 For example, this command will run training on TERRa dataset:
 ```shell
->>> python bin/ruroberta_terra_train.py
+>>> python bin/ruroberta_train.py --config-name='ruroberta_terra_config'
 ```
 
 * validate models

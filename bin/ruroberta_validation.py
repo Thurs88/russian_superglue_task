@@ -1,3 +1,4 @@
+import os
 import warnings
 
 warnings.filterwarnings('ignore')
@@ -47,32 +48,35 @@ def make_prediction(cfg: DictConfig) -> pd.DataFrame:
     set_seed(cfg.training.seed)
     model_names = glob.glob(f'../outputs/{cfg.test.run_name}/saved_models/*')
     best_model = [name for name in model_names if 'best' in name][0]
-    print(best_model)
 
+    # load from checkpoint
     model = load_obj(cfg.model.class_name)(cfg=cfg)
     checkpoint = torch.load(best_model)
     model.load_state_dict(checkpoint)
     model.to(cfg.test.device)
     model.eval()
 
-    cfg.datamodule.batch_size = 64
+    # get val dataloader
+    cfg.datamodule.batch_size = cfg.test.batch_size
     dm = load_obj(cfg.datamodule.data_module_name)(cfg=cfg)
     dm.prepare_data()
     dm.setup()
     val_df = dm.val_data
     val_dataloader = dm.val_dataloader()
 
+    # set bin threshold
     if cfg.test.threshold:
         threshold = torch.tensor([cfg.test.threshold]).to(cfg.test.device)
     else:
         threshold = torch.tensor([0.5]).to(cfg.test.device)
 
+    # labels mapping
     labels_map = cfg.test.labels_map
     labels_map_inv = {v: k for k, v in labels_map.items()}
 
     probs, preds = [], []
     with torch.no_grad():
-        for ind, batch in enumerate(val_dataloader):
+        for _, batch in enumerate(val_dataloader):
             batch = {k: v.to(cfg.test.device) for k, v in batch.items()}
             logits = model(
                 input_ids=batch["input_ids"],
@@ -91,19 +95,31 @@ def make_prediction(cfg: DictConfig) -> pd.DataFrame:
     val_df['label'] = val_df['label'].apply(lambda x: labels_map_inv[x])
 
     acc = accuracy_score(val_df['y_pred'], val_df['label'])
-    print(f"Threshold: {threshold.item()}, Validation Accuracy: {acc}")
+    print(f"validation accuracy: {acc}, threshold: {threshold.item()}")
 
     return val_df
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Validate on RUSSE dataset')
-    parser.add_argument('--device', help='inference device', type=str, default='cuda')
+    parser = argparse.ArgumentParser(description='model estimation on a val dataset')
+    parser.add_argument(
+        '--task_name',
+        help='name of task and dataset',
+        type=str,
+        choices=['terra', 'russe'],
+        default='russe'
+    )
+    parser.add_argument(
+        '--device',
+        help='inference device',
+        type=str,
+        default='cuda'
+    )
     args = parser.parse_args()
 
     initialize(config_path="../cfg/test/")
     test_cfg = compose(config_name="ruroberta_test")
-    test_cfg = test_cfg['russe']
+    test_cfg = test_cfg[args.task_name]
     test_cfg['device'] = args.device
 
     path = f'../outputs/{test_cfg.run_name}/.hydra/config.yaml'
@@ -116,4 +132,12 @@ if __name__ == '__main__':
     val_df_with_labels = make_prediction(cfg)
     val_df_with_labels = fit_bin_threshold(val_df_with_labels)
     # save results
-    val_df_with_labels.to_csv(f'../outputs/RUSSe_predicts/{cfg.test.run_name}_val_preds.csv', sep='\t', index=False)
+    save_dir = f'../outputs/{args.task_name}_predicts/'
+    if not os.path.exists(save_dir):  # type: ignore
+        os.makedirs(save_dir, exist_ok=True)
+
+    val_df_with_labels.to_csv(
+        os.path.join(save_dir, f'{cfg.test.run_name}_val_preds.csv'),
+        sep='\t',
+        index=False
+    )

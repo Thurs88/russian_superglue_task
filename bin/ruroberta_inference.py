@@ -17,7 +17,7 @@ import torch
 from src.get_dataset import get_test_dataset
 
 
-def make_prediction(cfg: DictConfig, sentence1: str, sentence2: str) -> None:
+def run_inference(cfg: DictConfig, sentence1: str, sentence2: str) -> None:
     """
     Run pytorch-lightning model inference
 
@@ -82,8 +82,18 @@ def make_prediction(cfg: DictConfig, sentence1: str, sentence2: str) -> None:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Make model inference')
-    parser.add_argument('--task_name', help='task name', type=str, default='terra')
-    parser.add_argument('--device', help='inference device', type=str, default='cuda')
+    parser.add_argument(
+        '--task_name',
+        help='task name',
+        type=str,
+        default='terra'
+    )
+    parser.add_argument(
+        '--device',
+        help='inference device',
+        type=str,
+        default='cuda'
+    )
     args = parser.parse_args()
 
     initialize(config_path="../cfg/inference/")
@@ -100,4 +110,5 @@ if __name__ == '__main__':
     print('Task name:', args.task_name)
     sentence1 = input("Введите sentence1: ")
     sentence2 = input("Введите sentence2: ")
-    make_prediction(cfg, sentence1=sentence1, sentence2=sentence2)
+
+    run_inference(cfg, sentence1=sentence1, sentence2=sentence2)
