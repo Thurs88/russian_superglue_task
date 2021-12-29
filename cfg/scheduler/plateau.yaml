@@ -3,5 +3,5 @@ step: epoch
 monitor: valid_loss  # train_${training.metric}
 params:
   mode: ${training.mode}
-  factor: 0.1
+  factor: 0.5
   patience: 10

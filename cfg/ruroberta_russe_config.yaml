@@ -12,7 +12,6 @@ defaults:
 #  - augmentation: basic_augs
   - loss: bce_logits
   - metric: accuracy  # metric_manager
-  - test: ruroberta_test
   - inference: ruroberta_inference
   - override hydra/hydra_logging: colorlog
   - override hydra/job_logging: colorlog

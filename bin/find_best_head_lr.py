@@ -62,30 +62,27 @@ def run(cfg: DictConfig) -> None:
     train_dataloader_size = len(dm.train_dataloader())
 
     model = load_obj(cfg.training.wrapper_name)(cfg=cfg, train_dataloader_size=train_dataloader_size)
-    trainer.fit(model, dm)
 
-    if cfg.general.save_pytorch_model and cfg.general.save_best:
-        if os.path.exists(trainer.checkpoint_callback.best_model_path):  # type: ignore
-            best_path = trainer.checkpoint_callback.best_model_path  # type: ignore
-            # extract file name without folder
-            save_name = os.path.basename(os.path.normpath(best_path))
-            model = model.load_from_checkpoint(
-                best_path, cfg=cfg, train_dataloader_size=train_dataloader_size, strict=False
-            )
-            model_name = Path(
-                cfg.callbacks.model_checkpoint.params.dirpath, f'best_{save_name}'.replace('.ckpt', '.pth')
-            ).as_posix()
-            torch.save(model.model.state_dict(), model_name)
-        else:
-            os.makedirs('saved_models', exist_ok=True)
-            model_name = 'saved_models/last.pth'
-            torch.save(model.model.state_dict(), model_name)
+    # Run learning rate finder
+    lr_finder = trainer.tuner.lr_find(
+        model=model,
+        datamodule=dm,
+        min_lr=8e-8,
+        max_lr=10,
+        num_training=500,
+    )
+    # Results
+    res = lr_finder.results
+    print('Loss | lr')
+    print(sorted(zip(res['loss'], res['lr'])))
 
-    if cfg.general.convert_to_jit and os.path.exists(trainer.checkpoint_callback.best_model_path):  # type: ignore
-        best_path = trainer.checkpoint_callback.best_model_path  # type: ignore
-        save_name = os.path.basename(os.path.normpath(best_path))
-        # TODO: check convert_to_jit func
-        convert_to_jit(model, save_name, cfg)
+    # Plot with
+    fig = lr_finder.plot(suggest=True)
+    fig.show()
+
+    # Pick point based on plot, or get suggestion
+    new_lr = lr_finder.suggestion()
+    print('best lr:', new_lr)
 
 
 @hydra.main(config_path='../cfg', config_name='ruroberta_terra_with_cls_head_config')

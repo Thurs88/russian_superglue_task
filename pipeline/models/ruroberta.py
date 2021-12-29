@@ -8,9 +8,10 @@ class ruRoBERTa(nn.Module):
     def __init__(self, cfg: DictConfig):
         super(ruRoBERTa, self).__init__()
         self.cfg = cfg
-        self.model = RobertaModel.from_pretrained(cfg.model.pretrained_model)
 
+        self.model = RobertaModel.from_pretrained(cfg.model.pretrained_model)
         self.add_token_type_embeddings()
+
         self.classifier = nn.Sequential(
             nn.BatchNorm1d(self.model.config.hidden_size),
             nn.Dropout(p=self.cfg.model.params.dropout),

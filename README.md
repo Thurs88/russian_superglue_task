@@ -30,6 +30,7 @@ Used datasets:
     * ruroberta_validation.py - model estimation on the val dataset
     * ruroberta_test.py - model inference on the test dataset
     * ruroberta_inference.py - model inference on individual examples
+    * find_best_head_lr.py - find best lr as a first approximation
 * [cfg/](cfg) - configs with experiment settings
     * augmentation
     * callbacks

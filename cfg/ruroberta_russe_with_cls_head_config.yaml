@@ -1,18 +1,18 @@
 defaults:
   - _self_
-  - datamodule: terra_dataset
+  - datamodule: russe_dataset
   - trainer: ruroberta_trainer
-  - training: ruroberta_training
+  - training: ruroberta_cls_head_training
   - logging: comet_ml
   - optimizer: adamw
-  - scheduler: linear_schedule_with_warmup
+  - scheduler: plateau  # exponential
   - model: ruroberta
   - callbacks: ruroberta_callbacks
   - private: comet_api
 #  - augmentation: basic_augs
   - loss: bce_logits
   - metric: accuracy  # metric_manager
-  - inference: ruroberta_test
+  - inference: ruroberta_inference
   - override hydra/hydra_logging: colorlog
   - override hydra/job_logging: colorlog
 
@@ -25,6 +25,7 @@ general:
   save_pytorch_model: True
   save_best: True
   convert_to_jit: False
+  checkpoint: /home/nbaranov/projects/personal/sberdev_test/outputs/2021-12-26_18-35-35/saved_models/best_epoch=10-valid_accuracy=0.8868.pth
 
 hydra:
   run:
