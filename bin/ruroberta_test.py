@@ -2,6 +2,8 @@ import json
 import os
 import warnings
 
+from pipeline.wrappers.ruroberta_cls_head_wrapper import ruRoBERTaFreezeFineTuner
+
 warnings.filterwarnings('ignore')
 import argparse
 import glob
@@ -33,7 +35,9 @@ def make_prediction(cfg: DictConfig) -> pd.DataFrame:
     model_names = glob.glob(f'../outputs/{cfg.test.run_name}/saved_models/*')
     best_model = [name for name in model_names if 'best' in name][0]
 
-    model = load_obj(cfg.model.class_name)(cfg=cfg)
+    tuner = ruRoBERTaFreezeFineTuner(cfg=cfg)
+    model = tuner.model
+    # model = load_obj(cfg.model.class_name)(cfg=cfg)
     checkpoint = torch.load(best_model)
     model.load_state_dict(checkpoint)
     model.to(cfg.test.device)
@@ -114,6 +118,7 @@ if __name__ == '__main__':
         cfg_yaml = yaml.safe_load(cfg)
         cfg_yaml['test'] = test_cfg
         cfg = OmegaConf.create(cfg_yaml)
+    print(OmegaConf.to_yaml(cfg))
 
     # predict labels
     test_df_with_labels = make_prediction(cfg)
@@ -129,4 +134,4 @@ if __name__ == '__main__':
         index=False
     )
     # save submission file
-    make_submit(test_df_with_labels, path_to_save='../outputs/TERRa_predicts/TERRa.jsonl')
+    make_submit(test_df_with_labels, path_to_save=os.path.join(save_dir, f'{args.task_name}.jsonl'))

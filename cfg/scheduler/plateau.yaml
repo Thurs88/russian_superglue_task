@@ -2,6 +2,6 @@ class_name: torch.optim.lr_scheduler.ReduceLROnPlateau
 step: epoch
 monitor: valid_loss  # train_${training.metric}
 params:
-  mode: ${training.mode}
+  mode: 'min'
   factor: 0.5
-  patience: 10
+  patience: 2

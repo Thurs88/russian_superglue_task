@@ -1,5 +1,4 @@
 lr: 2e-6
-head_lr: 0.20693917687376778 # TERRA 0.057543993733715694 RUSSE 0.00011504954145353045
 metric: ${metric.metric.metric_name}
 mode: "max"
 seed: 666

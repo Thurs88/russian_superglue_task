@@ -15,6 +15,7 @@ from sklearn.metrics import accuracy_score, roc_curve
 
 from src.technical_utils import load_obj
 from src.utils import set_seed
+from pipeline.wrappers.ruroberta_cls_head_wrapper import ruRoBERTaFreezeFineTuner
 
 
 def find_threshold_if_needed(labels, probas):
@@ -50,7 +51,9 @@ def make_prediction(cfg: DictConfig) -> pd.DataFrame:
     best_model = [name for name in model_names if 'best' in name][0]
 
     # load from checkpoint
-    model = load_obj(cfg.model.class_name)(cfg=cfg)
+    tuner = ruRoBERTaFreezeFineTuner(cfg=cfg)
+    model = tuner.model
+    # model = load_obj(cfg.model.class_name)(cfg=cfg)
     checkpoint = torch.load(best_model)
     model.load_state_dict(checkpoint)
     model.to(cfg.test.device)
@@ -107,7 +110,7 @@ if __name__ == '__main__':
         help='name of task and dataset',
         type=str,
         choices=['terra', 'russe'],
-        default='russe'
+        default='terra'
     )
     parser.add_argument(
         '--device',
@@ -117,7 +120,7 @@ if __name__ == '__main__':
     )
     args = parser.parse_args()
 
-    initialize(config_path="../cfg/test/")
+    initialize(config_path="../cfg/inference/")
     test_cfg = compose(config_name="ruroberta_test")
     test_cfg = test_cfg[args.task_name]
     test_cfg['device'] = args.device
@@ -127,6 +130,7 @@ if __name__ == '__main__':
         cfg_yaml = yaml.safe_load(cfg)
         cfg_yaml['test'] = test_cfg
         cfg = OmegaConf.create(cfg_yaml)
+    print(OmegaConf.to_yaml(cfg))
 
     # predict labels
     val_df_with_labels = make_prediction(cfg)

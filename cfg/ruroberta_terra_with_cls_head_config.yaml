@@ -2,7 +2,7 @@ defaults:
   - _self_
   - datamodule: terra_dataset
   - trainer: ruroberta_trainer
-  - training: ruroberta_cls_head_training
+  - training: ruroberta_terra_cls_head_training
   - logging: comet_ml
   - optimizer: adamw
   - scheduler: plateau

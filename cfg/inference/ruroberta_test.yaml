@@ -1,6 +1,6 @@
 terra:
-  run_name: "2021-12-24_19-42-55"
-  threshold: 0.6549594402313232
+  run_name: "2022-01-11_10-52-23"  # "2021-12-24_19-42-55"
+  threshold: 0.6261261701583862
   dataset_class: pipeline.datasets.terra_dataset.TERRaTestDataset
   batch_size: 32
   labels_map: {0: "not_entailment", 1: "entailment"}
