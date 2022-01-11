@@ -75,7 +75,7 @@ def run_inference(cfg: DictConfig, sentence1: str, sentence2: str) -> None:
     res['probs'] = probs
     res['y_pred'] = preds
     res['label'] = res['y_pred'].apply(lambda x: labels_map[x])
-    print('Predicted label:', res['label'].values[0])
+    print(f'predicted label: {res["label"].values[0]}, prob: {round(res["probs"].values[0], 3)}')
 
     return None
 
